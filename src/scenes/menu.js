@@ -10,8 +10,7 @@ class Menu extends Phaser.Scene {
     create() {
        // this.keySpace = this.input.keyboard.addKey(Phaser.Inpu.Keyboard.Keycodes.SPACE)
 
-        logo = this.add.image(centerX, centerY, 'logo').setOrigin(0.5)
-        logo.setScale(.5)
+        logo = this.add.image(575, 250, 'logo').setOrigin(0.5)
     }
 
     update() {
