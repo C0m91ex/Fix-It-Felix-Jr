@@ -12,6 +12,7 @@ class Menu extends Phaser.Scene {
 
         this.add.image(575, 300, 'logo').setOrigin(0.5)
         this.add.bitmapText(centerX, 600, 'gem_font', 'Press SPACE to start', 18).setOrigin(0.5)
+        this.add.bitmapText(centerX, 625, 'gem_font', 'Press I for instructions', 18).setOrigin(0.5)
 
         cursors = this.input.keyboard.createCursorKeys()
     }

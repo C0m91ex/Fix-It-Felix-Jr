@@ -16,7 +16,7 @@ let config = {
     },
     
     pixelArt: true,
-    scene: [ Menu, Play ]
+    scene: [ Menu, Instructions, Play ]
 }
 
 const game = new Phaser.Game(config)
