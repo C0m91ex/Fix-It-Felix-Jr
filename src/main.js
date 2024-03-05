@@ -12,7 +12,11 @@ let config = {
     width: 800,
     height: 900,
     physics: {
-        default: 'arcade'
+        default: 'arcade',
+        arcade: {
+            debug: true,
+            gravity: { y: 300 }
+        }
     },
     
     pixelArt: true,
