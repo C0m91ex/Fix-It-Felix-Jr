@@ -8,20 +8,27 @@ class Play extends Phaser.Scene {
 
     preload() {
         // load in images
-        this.load.image('platform', './assets/img/platform.png');
+        this.load.image('platform', './assets/img/platform.png')
+        this.load.image('building', './assets/img/building.png')
+        this.load.image('door', './assets/img/door.png')
         this.load.spritesheet('FelixJr', './assets/img/FelixSpriteSheet.png', {
             frameWidth: 48,
             frameHeight: 48
-        });
+        })
 
         // load in audio
         this.load.audio('jump', './assets/audio/jump.wav')
     }
 
     create() {
+
+
+        this.add.image(400, 431, 'building').setScale(2.5)
+        this.add.image(400, 620, 'door').setScale(2.5)
+
         // Create player character
-        this.player = this.physics.add.sprite(200, 300, 'FelixJr', 0);
-        this.player.setSize(25, 34)
+        this.player = this.physics.add.sprite(200, 300, 'FelixJr', 0).setScale(1.5);
+        this.player.setSize(20, 34)
         
 
         // adding in audio
@@ -29,7 +36,7 @@ class Play extends Phaser.Scene {
         this.jumpsound.volume = .5
 
         // Set up physics for the player
-        this.physics.world.setBounds(0, 0, 800, 600);
+        this.physics.world.setBounds(0, 0, 800, 700);
         this.player.setCollideWorldBounds(true);
 
         // Felix Jr. animations
@@ -59,7 +66,30 @@ class Play extends Phaser.Scene {
 
         // Create platforms
         this.platforms = this.physics.add.staticGroup();
-        this.platforms.create(400, 500, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        // fourth level
+        this.platforms.create(400, 310, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(225, 310, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(300, 310, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(500, 310, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(575, 310, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        // third level
+        this.platforms.create(400, 410, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(225, 410, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(300, 410, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(500, 410, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(575, 410, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        // second level
+        this.platforms.create(400, 525, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(225, 525, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(300, 525, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(500, 525, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(575, 525, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        // first level 
+        this.platforms.create(225, 625, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(300, 625, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(500, 625, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+        this.platforms.create(575, 625, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
+
 
         // Add collisions between player and platforms
         this.physics.add.collider(this.player, this.platforms, this.onPlatform);
