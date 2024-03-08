@@ -7,17 +7,26 @@ class Play extends Phaser.Scene {
     }
 
     preload() {
-        //this.load.image('FelixJr', './assets/img/felixtest.png');
+        // load in images
         this.load.image('platform', './assets/img/platform.png');
         this.load.spritesheet('FelixJr', './assets/img/FelixSpriteSheet.png', {
             frameWidth: 48,
             frameHeight: 48
         });
+
+        // load in audio
+        this.load.audio('jump', './assets/audio/jump.wav')
     }
 
     create() {
         // Create player character
         this.player = this.physics.add.sprite(200, 300, 'FelixJr', 0);
+        this.player.setSize(25, 34)
+        
+
+        // adding in audio
+        this.jumpsound = this.sound.add('jump')
+        this.jumpsound.volume = .5
 
         // Set up physics for the player
         this.physics.world.setBounds(0, 0, 800, 600);
@@ -71,6 +80,7 @@ class Play extends Phaser.Scene {
 
         // Player jumping
         if (this.cursors.up.isDown && this.player.body.onFloor()) {
+            this.jumpsound.play()
             this.player.setVelocityY(-330);
             this.player.anims.play('jump', true)
         }
