@@ -20,6 +20,10 @@ class Play extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48
         })
+        this.load.spritesheet('Ralph', './assets/img/RalphSpriteSheet.png', {
+            frameWidth: 64,
+            frameHeight: 64
+        })
         this.load.spritesheet('FelixJr', './assets/img/FelixSpriteSheet.png', {
             frameWidth: 48,
             frameHeight: 48
@@ -35,9 +39,10 @@ class Play extends Phaser.Scene {
         this.add.image(400, 431, 'building').setScale(2.5)
         this.add.image(400, 620, 'door').setScale(2.5)
 
+        // adding ralph 
+        this.npc = this.add.sprite(500, 106, 'Ralph', 5).setScale(1.75)
 
-        //adding the windows  
-
+        //adding the windows layer
         // fourth level
         this.window = this.add.sprite(400, 273, 'window', 0).setScale(2)
         this.window = this.add.sprite(225, 273, 'window', 0).setScale(2)
