@@ -10,7 +10,7 @@ Game Name: Fix-It Felix Jr
 let config = {
     type: Phaser.AUTO,
     width: 800,
-    height: 900,
+    height: 750,
     physics: {
         default: 'arcade',
         arcade: {
