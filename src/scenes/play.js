@@ -94,12 +94,19 @@ class Play extends Phaser.Scene {
         })
         this.anims.create({
             key: 'jump',
-            frameRate: 5,
+            frameRate: 2,
             repeat: false,
             frames: this.anims.generateFrameNumbers('FelixJr', {
-                start: 0,
-                end: 1
+                start: 1,
+                end: 0
             })
+        })
+        this.anims.create({
+            key: 'fix',
+            frameRate: 5,
+            frames: this.anims.generateFrameNumbers('FelixJr', {
+                frames: [ 0, 4, 0]
+            })   
         })
 
         this.player.on('animationcomplete', function (animation, frame, player) {
@@ -159,6 +166,10 @@ class Play extends Phaser.Scene {
             this.player.anims.play('jump', true)
         }
         this.handleInput();
+
+        if (this.cursors.space.isDown) {
+            this.player.anims.play('fix', true)
+        }
     }
 
     handleInput() {
