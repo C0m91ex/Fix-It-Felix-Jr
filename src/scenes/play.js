@@ -2,8 +2,7 @@ class Play extends Phaser.Scene {
     constructor() {
         super("playScene");
 
-        this.isOnPlatform = false;
-        this.onPlatform = null;
+
     }
 
     preload() {
@@ -42,33 +41,58 @@ class Play extends Phaser.Scene {
         // adding ralph 
         this.npc = this.add.sprite(500, 106, 'Ralph', 5).setScale(1.75)
 
+
+        // window states
+        this.anims.create({
+            key: 'fixed',
+            frameRate: 1,
+            frames: this.anims.generateFrameNumbers('window', {
+                frames: [ 0 ]
+            })
+        })
+        this.anims.create({
+            key: 'halfbroken',
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('window', {
+                frames: [ 1 ]
+            })
+        })
+        this.anims.create({
+            key: 'broken',
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('window', {
+                frames: [ 2 ]
+            })
+        })
+
         //adding the windows layer
+        this.window = this.physics.add.group()
         // fourth level
-        this.window = this.add.sprite(400, 273, 'window', 0).setScale(2)
-        this.window = this.add.sprite(225, 273, 'window', 0).setScale(2)
-        this.window = this.add.sprite(300, 273, 'window', 0).setScale(2)
-        this.window = this.add.sprite(500, 273, 'window', 0).setScale(2)
-        this.window = this.add.sprite(575, 273, 'window', 0).setScale(2)
+        this.window = this.add.sprite(400, 273, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(225, 273, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(300, 273, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(500, 273, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(575, 273, 'window').setScale(2).play('fixed')
 
         // third level
-        this.window = this.add.sprite(400, 373, 'window', 0).setScale(2)
-        this.window = this.add.sprite(225, 373, 'window', 0).setScale(2)
-        this.window = this.add.sprite(300, 373, 'window', 0).setScale(2)
-        this.window = this.add.sprite(500, 373, 'window', 0).setScale(2)
-        this.window = this.add.sprite(575, 373, 'window', 0).setScale(2)
+        this.window = this.add.sprite(400, 373, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(225, 373, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(300, 373, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(500, 373, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(575, 373, 'window').setScale(2).play('fixed')
 
         // second level
         this.balcony = this.add.sprite(400, 490, 'balcony', 0).setScale(2.5)
-        this.window = this.add.sprite(225, 488, 'window', 0).setScale(2)
-        this.window = this.add.sprite(300, 488, 'window', 0).setScale(2)
-        this.window = this.add.sprite(500, 488, 'window', 0).setScale(2)
-        this.window = this.add.sprite(575, 488, 'window', 0).setScale(2)
+        this.window = this.add.sprite(225, 488, 'window').setScale(2).play('broken')
+        this.window = this.add.sprite(300, 488, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(500, 488, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(575, 488, 'window').setScale(2).play('fixed')
 
         //first level
-        this.window = this.add.sprite(225, 588, 'window', 0).setScale(2)
-        this.window = this.add.sprite(300, 588, 'window', 0).setScale(2)
-        this.window = this.add.sprite(500, 588, 'window', 0).setScale(2)
-        this.window = this.add.sprite(575, 588, 'window', 0).setScale(2)
+        this.window = this.add.sprite(225, 588, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(300, 588, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(500, 588, 'window').setScale(2).play('fixed')
+        this.window = this.add.sprite(575, 588, 'window').setScale(2).play('fixed')
 
         // Create player character
         this.player = this.physics.add.sprite(200, 300, 'FelixJr', 0).setScale(1.5);
@@ -159,29 +183,36 @@ class Play extends Phaser.Scene {
             this.player.setVelocityX(0);
         }
 
+        // Player passing through floor 
+        if (this.cursors.down.isDown) {
+            this.player.body.checkCollision.down = false;
+        } else {
+            this.player.body.checkCollision.down = true;
+        }
+
         // Player jumping
         if (this.cursors.up.isDown && this.player.body.onFloor()) {
             this.jumpsound.play()
             this.player.setVelocityY(-330);
             this.player.anims.play('jump', true)
         }
-        this.handleInput();
+
+        // Change window state when player overlaps and presses space
+        this.physics.overlap(this.player, this.window, (player, window) => {
+            if (this.cursors.space.isDown) {
+                if (window.anims.currentAnim.key === 'fixed') {
+                    window.anims.play('fixed')
+                } else if (window.anims.currentAnim.key === 'halfbroken') {
+                    window.anims.play('fixed')
+                } else if (window.anims.currentAnim.key === 'broken') {
+                    window.anims.play('halfbroken')
+                }
+            }
+        })
 
         if (this.cursors.space.isDown) {
             this.player.anims.play('fix', true)
         }
     }
 
-    handleInput() {
-        if ((this.cursors.down.isDown && this.isOnPlatform)) {
-            this.onPlatform.body.checkCollision.up = false;
-            
-          }
-    }
-
-    onPlatform(player, platform) {  
-        // this call back is only used for "passThru" platform, since need to change collider property
-        player.isOnPlatform = true;
-        player.onPlatform = platform;
-    }
 }
