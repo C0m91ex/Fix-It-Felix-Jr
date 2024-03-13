@@ -1,7 +1,8 @@
 class Play extends Phaser.Scene {
     constructor() {
         super("playScene");
-
+        this.playerlives = 3;
+        this.lifeIcons = [];
 
     }
 
@@ -10,6 +11,7 @@ class Play extends Phaser.Scene {
         this.load.image('platform', './assets/img/platform.png')
         this.load.image('platform2', './assets/img/platform2.png')        
         this.load.image('building', './assets/img/building.png')
+        this.load.image('lifeIcon', './assets/img/icon.png')
         this.load.image('door', './assets/img/door.png')
         this.load.spritesheet('balcony', './assets/img/balcony.png', {
             frameWidth: 48,
@@ -66,7 +68,7 @@ class Play extends Phaser.Scene {
         })
 
         //adding the windows layer
-        this.window = this.physics.add.group()
+        this.window = this.physics.add.staticGroup();
         // fourth level
         this.window = this.add.sprite(400, 273, 'window').setScale(2).play('fixed')
         this.window = this.add.sprite(225, 273, 'window').setScale(2).play('fixed')
@@ -94,6 +96,7 @@ class Play extends Phaser.Scene {
         this.window = this.add.sprite(500, 588, 'window').setScale(2).play('fixed')
         this.window = this.add.sprite(575, 588, 'window').setScale(2).play('fixed')
 
+
         // Create player character
         this.player = this.physics.add.sprite(200, 300, 'FelixJr', 0).setScale(1.5);
         this.player.setSize(20, 34)
@@ -106,6 +109,7 @@ class Play extends Phaser.Scene {
         // Set up physics for the player
         this.physics.world.setBounds(0, 0, 800, 700);
         this.player.setCollideWorldBounds(true);
+        this.player.body.onOverlap = true
 
         // Felix Jr. animations
         this.anims.create({
@@ -167,10 +171,21 @@ class Play extends Phaser.Scene {
 
 
         // Add collisions between player and platforms
-        this.physics.add.collider(this.player, this.platforms, this.onPlatform);
+        this.physics.add.collider(this.player, this.platforms);
 
         // Set up keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
+
+        this.physics.add.overlap(this.player,this.window)
+
+        // creating life counters
+        this.lifeIcon = this.add.sprite(785, 15, 'lifeIcon').setScale(2)
+
+        for (let i = 0; i < this.playerlives; i++) {
+            const life = this.add.sprite(this.lifeIcon.x - (i + 1) * (this.lifeIcon.width + 10), this.lifeIcon.y, 'lifeIcon').setScale(2)
+            this.lifeIcons.push(life)
+        }
+
     }
 
     update() {
@@ -198,13 +213,19 @@ class Play extends Phaser.Scene {
         }
 
         // Change window state when player overlaps and presses space
+        this.player.body.debugBodyColor = this.player.body.touching.none ? 0x0099ff : 0xff9900;
+
         this.physics.overlap(this.player, this.window, (player, window) => {
             if (this.cursors.space.isDown) {
+                console.log('space is pressed')
                 if (window.anims.currentAnim.key === 'fixed') {
+                    console.log('window is fixed')
                     window.anims.play('fixed')
                 } else if (window.anims.currentAnim.key === 'halfbroken') {
+                    console.log('fully fixed window')
                     window.anims.play('fixed')
                 } else if (window.anims.currentAnim.key === 'broken') {
+                    console.log('partially fixed window')
                     window.anims.play('halfbroken')
                 }
             }
@@ -212,6 +233,17 @@ class Play extends Phaser.Scene {
 
         if (this.cursors.space.isDown) {
             this.player.anims.play('fix', true)
+        }
+    }
+
+    updateLifeIcons() {
+        while (this.lifeIcons.length > this.playerlives) {
+            this.lifeIcons.pop().destroy()
+        }
+
+        while (this.lifeIcons.length < this.playerlives) {
+            const life = this.add.sprite(this.lifeIcon.x - (this.lifeIcons.length + 1) * (this.lifeIcon.width + 10), this.lifeIcon.y, 'lifeIcon').setScale(2)
+            this.lifeIcons.push(life)
         }
     }
 
