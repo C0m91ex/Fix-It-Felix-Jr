@@ -13,6 +13,7 @@ class Play extends Phaser.Scene {
         this.load.image('building', './assets/img/building.png')
         this.load.image('lifeIcon', './assets/img/icon.png')
         this.load.image('door', './assets/img/door.png')
+        this.load.image('brick', './assets/img/brick.png')
         this.load.spritesheet('balcony', './assets/img/balcony.png', {
             frameWidth: 48,
             frameHeight: 48
@@ -169,9 +170,21 @@ class Play extends Phaser.Scene {
         this.platforms.create(500, 625, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
         this.platforms.create(575, 625, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
 
+        this.bricks = this.physics.add.group()
+        
+        this.spawnBrickTimer = this.time.addEvent({
+            delay: 2500,
+            loop: true,
+            callback: this.createBricks,
+            callbackScope: this
+        })
 
-        // Add collisions between player and platforms
+    
+
+
+        // Add collisions 
         this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.player, this.bricks, this.handleBrickCollision, null, this)
 
         // Set up keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -179,12 +192,9 @@ class Play extends Phaser.Scene {
         this.physics.add.overlap(this.player,this.window)
 
         // creating life counters
-        this.lifeIcon = this.add.sprite(785, 15, 'lifeIcon').setScale(2)
+        this.lifeIcon = this.add.sprite(1000, 1000, 'lifeIcon').setScale(2)
 
-        for (let i = 0; i < this.playerlives; i++) {
-            const life = this.add.sprite(this.lifeIcon.x - (i + 1) * (this.lifeIcon.width + 10), this.lifeIcon.y, 'lifeIcon').setScale(2)
-            this.lifeIcons.push(life)
-        }
+        this.updateLifeIcons()
 
     }
 
@@ -234,17 +244,48 @@ class Play extends Phaser.Scene {
         if (this.cursors.space.isDown) {
             this.player.anims.play('fix', true)
         }
+
+        // checking if player runs out of lives
+        if (this.playerlives <= 0) {
+            this.scene.start('gameoverScene')
+        }
     }
 
     updateLifeIcons() {
-        while (this.lifeIcons.length > this.playerlives) {
-            this.lifeIcons.pop().destroy()
+        this.lifeIcons.forEach(icon => icon.destroy())
+        this.lifeIcons = []
+    
+        const startX = 785; // Adjust as needed
+        const startY = 15; // Adjust as needed
+        const spacing = 1; // Adjust as needed
+        const iconWidth = 40; // Width of the life icon
+    
+        for (let i = 0; i < this.playerlives; i++) {
+            const life = this.add.sprite(startX - i * (spacing + iconWidth), startY, 'lifeIcon').setScale(2);
+            this.lifeIcons.push(life);
         }
+    }
 
-        while (this.lifeIcons.length < this.playerlives) {
-            const life = this.add.sprite(this.lifeIcon.x - (this.lifeIcons.length + 1) * (this.lifeIcon.width + 10), this.lifeIcon.y, 'lifeIcon').setScale(2)
-            this.lifeIcons.push(life)
-        }
+    loseLife() {
+        this.playerlives--
+        this.updateLifeIcons()
+    }
+
+    createBricks() {
+        const xPositions = [225, 300, 400, 500, 575]
+        const startY = 175
+
+        const randomIndex = Phaser.Math.RND.integerInRange(0, xPositions.length - 1)
+        const x = xPositions[randomIndex]
+
+        const brick = this.bricks.create(x, startY, 'brick').setScale(2)
+        brick.body.setVelocityY(75)
+        brick.body.allowGravity = false
+    }
+
+    handleBrickCollision(player, brick) {
+        this.loseLife()
+        brick.destroy()
     }
 
 }
