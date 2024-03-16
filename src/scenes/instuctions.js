@@ -7,6 +7,7 @@ class Instructions extends Phaser.Scene {
         this.load.image('directionalKeys', './assets/img/directionalkeys.png')
         this.load.image('spacebar', './assets/img/spacebar.png')
         this.load.bitmapFont('gem_font', './assets/font/gem.png', './assets/font/gem.xml')
+        this.load.audio('select', './assets/audio/select.wav')
     }
 
     create() {
@@ -20,13 +21,17 @@ class Instructions extends Phaser.Scene {
         this.add.bitmapText(centerX, 500, 'gem_font', '* Credits *', 18).setOrigin(0.5)
         this.add.bitmapText(centerX, 550, 'gem_font', 'All visual assets created by Jason Torres using Aseprite', 18).setOrigin(0.5)
         this.add.bitmapText(centerX, 575, 'gem_font', 'All audio assets found on pixabay.com', 18).setOrigin(0.5)
-        this.add.bitmapText(centerX, 700, 'gem_font', 'Press SPACE to return to the menu', 18).setOrigin(0.5)
+        this.add.bitmapText(centerX, 700, 'gem_font', 'Press UP to return to the menu', 18).setOrigin(0.5)
+
+        this.selectsound = this.sound.add('select')
+        this.selectsound.volume = .5
 
         cursors = this.input.keyboard.createCursorKeys()
     }
 
     update() {
-        if(Phaser.Input.Keyboard.JustDown(cursors.space)) {
+        if(Phaser.Input.Keyboard.JustDown(cursors.up)) {
+            this.selectsound.play()
             this.scene.start("menuScene")
         }
     }

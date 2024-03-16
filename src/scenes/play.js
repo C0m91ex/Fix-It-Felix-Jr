@@ -33,6 +33,9 @@ class Play extends Phaser.Scene {
 
         // load in audio
         this.load.audio('jump', './assets/audio/jump.wav')
+        this.load.audio('backgroundmusic', './assets/audio/backgroundmusic.wav')
+        this.load.audio('gameover', './assets/audio/gameover.wav')
+        this.load.audio('music', './assets/audio/backgroundmusic.wav')
     }
 
     create() {
@@ -40,6 +43,12 @@ class Play extends Phaser.Scene {
         // adding building pieces
         this.add.image(400, 431, 'building').setScale(2.5)
         this.add.image(400, 620, 'door').setScale(2.5)
+
+        // adding background music
+        this.music = this.sound.add('music')
+        this.music.loop = true
+        this.music.volume = .3
+        this.music.play()
 
         // adding ralph 
         this.npc = this.add.sprite(500, 106, 'Ralph', 5).setScale(1.75)
@@ -99,13 +108,16 @@ class Play extends Phaser.Scene {
 
 
         // Create player character
-        this.player = this.physics.add.sprite(200, 300, 'FelixJr', 0).setScale(1.5);
+        this.player = this.physics.add.sprite(650, 700, 'FelixJr', 0).setScale(1.5);
         this.player.setSize(20, 34)
         
 
         // adding in audio
         this.jumpsound = this.sound.add('jump')
         this.jumpsound.volume = .5
+
+        this.gameoversound = this.sound.add('gameover')
+        this.gameoversound.volume = .5
 
         // Set up physics for the player
         this.physics.world.setBounds(0, 0, 800, 700);
@@ -138,11 +150,6 @@ class Play extends Phaser.Scene {
             })   
         })
 
-        this.player.on('animationcomplete', function (animation, frame, player) {
-            if (animation.key === 'jump' && player.body.onFloor()) {
-                player.anims.play('idle'); // Play the idle animation when the jump animation completes and the player is on the ground
-            }
-        })
 
         // Create platforms
         this.platforms = this.physics.add.staticGroup();
@@ -247,6 +254,8 @@ class Play extends Phaser.Scene {
 
         // checking if player runs out of lives
         if (this.playerlives <= 0) {
+            this.music.pause()
+            this.gameoversound.play()
             this.scene.start('gameoverScene')
         }
     }
