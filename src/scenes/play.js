@@ -14,6 +14,7 @@ class Play extends Phaser.Scene {
         this.load.image('lifeIcon', './assets/img/icon.png')
         this.load.image('door', './assets/img/door.png')
         this.load.image('brick', './assets/img/brick.png')
+        // load in spritesheets
         this.load.spritesheet('balcony', './assets/img/balcony.png', {
             frameWidth: 48,
             frameHeight: 48
@@ -192,6 +193,7 @@ class Play extends Phaser.Scene {
         this.platforms.create(500, 625, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
         this.platforms.create(575, 625, 'platform').setScale(2).refreshBody().body.checkCollision.down = false;
 
+        // creation for bricks and timing
         this.bricks = this.physics.add.group()
         
         this.spawnBrickTimer = this.time.addEvent({
@@ -206,18 +208,16 @@ class Play extends Phaser.Scene {
             callbackScope: this
         })
 
-        // Add overlap
+        // Add overlap physics
         this.physics.add.overlap(this.player, this.window, this.handleWindowInteraction, null, this)
 
-        // Add collisions 
+        // Add collision physics
         this.physics.add.collider(this.player, this.platforms)
         this.physics.add.collider(this.player, this.window)
         this.physics.add.collider(this.player, this.bricks, this.handleBrickCollision, null, this)
 
         // Set up keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
-
-        this.physics.add.overlap(this.player,this.window)
 
         // creating life counters
         this.lifeIcon = this.add.sprite(1000, 1000, 'lifeIcon').setScale(2)
@@ -251,11 +251,12 @@ class Play extends Phaser.Scene {
         }
 
 
-
+        // Player and Window fix interaction
         if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
             this.interactWithWindow()
         }
 
+        // effects for fix action
         if (this.cursors.space.isDown) {
             this.fixsound.play()
             this.player.anims.play('fix', true)
@@ -268,6 +269,7 @@ class Play extends Phaser.Scene {
             this.scene.start('gameoverScene')
         }
 
+        // checking if all the windows are fully fixed
         if (this.checkForVictory()) {
             this.music.pause()
             this.victorysound.play()
@@ -275,6 +277,7 @@ class Play extends Phaser.Scene {
         }
     }
 
+    // Handle all the window interactions
     addwindow(x, y, initialState) {
         const window = this.windowGroup.create(x, y, 'window').setScale(2)
         window.anims.play(initialState)
@@ -309,7 +312,7 @@ class Play extends Phaser.Scene {
         }
     }
 
-
+    // Player life counter
     updateLifeIcons() {
         this.lifeIcons.forEach(icon => icon.destroy())
         this.lifeIcons = []
@@ -329,6 +332,7 @@ class Play extends Phaser.Scene {
         this.updateLifeIcons()
     }
 
+    // Brick obstacle
     createBricks() {
         const xPositions = [225, 300, 400, 500, 575]
         const startY = 175
