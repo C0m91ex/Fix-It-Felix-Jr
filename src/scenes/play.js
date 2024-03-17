@@ -35,6 +35,7 @@ class Play extends Phaser.Scene {
         this.load.audio('jump', './assets/audio/jump.wav')
         this.load.audio('backgroundmusic', './assets/audio/backgroundmusic.wav')
         this.load.audio('gameover', './assets/audio/gameover.wav')
+        this.load.audio('victory', './assets/audio/victory.wav')
         this.load.audio('music', './assets/audio/backgroundmusic.wav')
     }
 
@@ -51,7 +52,14 @@ class Play extends Phaser.Scene {
         this.music.play()
 
         // adding ralph 
-        this.npc = this.add.sprite(500, 106, 'Ralph', 5).setScale(1.75)
+        this.npc = this.add.sprite(centerX, 106, 'Ralph', 5).setScale(1.75)
+        this.anims.create({
+            key: 'wreck',
+            frameRate: 10,
+            frames: this.anims.generateFrameNumbers('Ralph', {
+                frames: [ 5, 6, 7, 8, 9, 6, 7, 8, 9, 5]
+            })
+        })
 
 
         // window states
@@ -78,33 +86,33 @@ class Play extends Phaser.Scene {
         })
 
         //adding the windows layer
-        this.window = this.physics.add.staticGroup();
+        this.windowGroup = this.physics.add.staticGroup();
         // fourth level
-        this.window = this.add.sprite(400, 273, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(225, 273, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(300, 273, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(500, 273, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(575, 273, 'window').setScale(2).play('fixed')
+        this.addwindow(400, 273, 'halfbroken')
+        this.addwindow(225, 273, 'halfbroken')
+        this.addwindow(300, 273, 'broken')
+        this.addwindow(500, 273, 'halfbroken')
+        this.addwindow(575, 273, 'halfbroken')
 
         // third level
-        this.window = this.add.sprite(400, 373, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(225, 373, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(300, 373, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(500, 373, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(575, 373, 'window').setScale(2).play('fixed')
+        this.addwindow(400, 373, 'halfbroken')
+        this.addwindow(225, 373, 'halfbroken')
+        this.addwindow(300, 373, 'broken')
+        this.addwindow(500, 373, 'halfbroken')
+        this.addwindow(575, 373, 'broken')
 
         // second level
         this.balcony = this.add.sprite(400, 490, 'balcony', 0).setScale(2.5)
-        this.window = this.add.sprite(225, 488, 'window').setScale(2).play('broken')
-        this.window = this.add.sprite(300, 488, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(500, 488, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(575, 488, 'window').setScale(2).play('fixed')
+        this.addwindow(225, 488, 'halfbroken')
+        this.addwindow(300, 488, 'broken')
+        this.addwindow(500, 488, 'halfbroken')
+        this.addwindow(575, 488, 'halfbroken')
 
         //first level
-        this.window = this.add.sprite(225, 588, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(300, 588, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(500, 588, 'window').setScale(2).play('fixed')
-        this.window = this.add.sprite(575, 588, 'window').setScale(2).play('fixed')
+        this.addwindow(225, 588, 'halfbroken')
+        this.addwindow(300, 588, 'broken')
+        this.addwindow(500, 588, 'halfbroken')
+        this.addwindow(575, 588, 'broken')
 
 
         // Create player character
@@ -118,6 +126,9 @@ class Play extends Phaser.Scene {
 
         this.gameoversound = this.sound.add('gameover')
         this.gameoversound.volume = .5
+        
+        this.victorysound = this.sound.add('victory')
+        this.victorysound.volume = .5
 
         // Set up physics for the player
         this.physics.world.setBounds(0, 0, 800, 700);
@@ -182,12 +193,17 @@ class Play extends Phaser.Scene {
         this.spawnBrickTimer = this.time.addEvent({
             delay: 2500,
             loop: true,
-            callback: this.createBricks,
+            callback: function() {
+                this.npc.anims.play('wreck')
+                this.time.delayedCall(500, function() {
+                    this.createBricks()
+                }, [], this)
+            }, 
             callbackScope: this
         })
 
-    
-
+        // Add overlap
+        this.physics.add.overlap(this.player, this.window, this.handleWindowInteraction, null, this)
 
         // Add collisions 
         this.physics.add.collider(this.player, this.platforms)
@@ -226,27 +242,14 @@ class Play extends Phaser.Scene {
         // Player jumping
         if (this.cursors.up.isDown && this.player.body.onFloor()) {
             this.jumpsound.play()
-            this.player.setVelocityY(-330);
+            this.player.setVelocityY(-330)
             this.player.anims.play('jump', true)
         }
 
-        // Change window state when player overlaps and presses space
-        this.player.body.debugBodyColor = this.player.body.touching.none ? 0x0099ff : 0xff9900;
 
-        if (!this.player.body.touching.none) {
-            if (this.cursors.space.isDown) {
-                console.log('space is pressed')
-                if (this.window.framecount == 0) {
-                    console.log('window is fixed')
-                    window.anims.play('fixed')
-                } else if (this.window.framecount == 1) {
-                    console.log('fully fixed window')
-                    window.anims.play('fixed')
-                } else if (this.window.framecount == 2) {
-                    console.log('partially fixed window')
-                    window.anims.play('halfbroken')
-                }
-            }
+
+        if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+            this.interactWithWindow()
         }
 
         if (this.cursors.space.isDown) {
@@ -259,20 +262,60 @@ class Play extends Phaser.Scene {
             this.gameoversound.play()
             this.scene.start('gameoverScene')
         }
+
+        if (this.checkForVictory()) {
+            this.music.pause()
+            this.victorysound.play()
+            this.scene.start('victoryScene')
+        }
     }
+
+    addwindow(x, y, initialState) {
+        const window = this.windowGroup.create(x, y, 'window').setScale(2)
+        window.anims.play(initialState)
+        return window
+    }
+
+    interactWithWindow() {
+        const overlappingWindows = this.windowGroup.getChildren().filter(window => this.physics.overlap(this.player, window))
+
+        if (overlappingWindows. length > 0) {
+            const window = overlappingWindows[0]
+
+            switch (window.anims.currentAnim.key) {
+                case 'fixed':
+                    window.anims.play('fixed')
+                    break
+                case 'halfbroken':
+                    window.anims.play('fixed')
+                    break
+                case 'broken':
+                    window.anims.play('halfbroken')
+                    break
+                default:
+                    break
+            }
+        }
+    }
+
+    handleWindowInteraction(player, window) {
+        if(Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+            this.interactWithWindow()
+        }
+    }
+
 
     updateLifeIcons() {
         this.lifeIcons.forEach(icon => icon.destroy())
         this.lifeIcons = []
     
-        const startX = 785; // Adjust as needed
-        const startY = 15; // Adjust as needed
-        const spacing = 1; // Adjust as needed
-        const iconWidth = 40; // Width of the life icon
-    
+        const startX = 785
+        const startY = 15
+        const spacing = 1 
+        const iconWidth = 40 
         for (let i = 0; i < this.playerlives; i++) {
-            const life = this.add.sprite(startX - i * (spacing + iconWidth), startY, 'lifeIcon').setScale(2);
-            this.lifeIcons.push(life);
+            const life = this.add.sprite(startX - i * (spacing + iconWidth), startY, 'lifeIcon').setScale(2)
+            this.lifeIcons.push(life)
         }
     }
 
@@ -296,6 +339,16 @@ class Play extends Phaser.Scene {
     handleBrickCollision(player, brick) {
         this.loseLife()
         brick.destroy()
+    }
+
+    checkForVictory() {
+        let allFixed = true;
+        this.windowGroup.getChildren().forEach(window => {
+            if (window.anims.currentAnim.key !== 'fixed') {
+                allFixed = false;
+            }
+        });
+        return allFixed;
     }
 
 }

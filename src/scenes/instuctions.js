@@ -18,10 +18,11 @@ class Instructions extends Phaser.Scene {
         this.add.bitmapText(500, 250, 'gem_font', 'Use (down arrow) to drop down', 18).setOrigin(0.5)
         this.add.image(150, 350, 'spacebar').setScale(3)
         this.add.bitmapText(500, 350, 'gem_font', 'While over a window use (Spacebar) to fix the window ', 18).setOrigin(0.5)
+        this.add.bitmapText(centerX, 425, 'gem_font', 'AVOID FALLING BRICKS!', 18).setOrigin(0.5)
         this.add.bitmapText(centerX, 500, 'gem_font', '* Credits *', 18).setOrigin(0.5)
         this.add.bitmapText(centerX, 550, 'gem_font', 'All visual assets created by Jason Torres using Aseprite', 18).setOrigin(0.5)
         this.add.bitmapText(centerX, 575, 'gem_font', 'All audio assets found on pixabay.com', 18).setOrigin(0.5)
-        this.add.bitmapText(centerX, 700, 'gem_font', 'Press UP to return to the menu', 18).setOrigin(0.5)
+        this.add.bitmapText(centerX, 700, 'gem_font', 'Press UP  to return to the menu', 18).setOrigin(0.5)
 
         this.selectsound = this.sound.add('select')
         this.selectsound.volume = .5
