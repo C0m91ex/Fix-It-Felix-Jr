@@ -190,7 +190,8 @@ class Play extends Phaser.Scene {
 
 
         // Add collisions 
-        this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.player, this.platforms)
+        this.physics.add.collider(this.player, this.window)
         this.physics.add.collider(this.player, this.bricks, this.handleBrickCollision, null, this)
 
         // Set up keyboard controls
@@ -232,21 +233,21 @@ class Play extends Phaser.Scene {
         // Change window state when player overlaps and presses space
         this.player.body.debugBodyColor = this.player.body.touching.none ? 0x0099ff : 0xff9900;
 
-        this.physics.overlap(this.player, this.window, (player, window) => {
+        if (!this.player.body.touching.none) {
             if (this.cursors.space.isDown) {
                 console.log('space is pressed')
-                if (window.anims.currentAnim.key === 'fixed') {
+                if (this.window.framecount == 0) {
                     console.log('window is fixed')
                     window.anims.play('fixed')
-                } else if (window.anims.currentAnim.key === 'halfbroken') {
+                } else if (this.window.framecount == 1) {
                     console.log('fully fixed window')
                     window.anims.play('fixed')
-                } else if (window.anims.currentAnim.key === 'broken') {
+                } else if (this.window.framecount == 2) {
                     console.log('partially fixed window')
                     window.anims.play('halfbroken')
                 }
             }
-        })
+        }
 
         if (this.cursors.space.isDown) {
             this.player.anims.play('fix', true)
