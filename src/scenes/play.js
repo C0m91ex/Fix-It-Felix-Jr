@@ -33,6 +33,7 @@ class Play extends Phaser.Scene {
 
         // load in audio
         this.load.audio('jump', './assets/audio/jump.wav')
+        this.load.audio('fixsound', './assets/audio/fix.wav')
         this.load.audio('backgroundmusic', './assets/audio/backgroundmusic.wav')
         this.load.audio('gameover', './assets/audio/gameover.wav')
         this.load.audio('victory', './assets/audio/victory.wav')
@@ -123,6 +124,9 @@ class Play extends Phaser.Scene {
         // adding in audio
         this.jumpsound = this.sound.add('jump')
         this.jumpsound.volume = .5
+
+        this.fixsound = this.sound.add('fixsound')
+        this.fixsound.volume = .5
 
         this.gameoversound = this.sound.add('gameover')
         this.gameoversound.volume = .5
@@ -253,6 +257,7 @@ class Play extends Phaser.Scene {
         }
 
         if (this.cursors.space.isDown) {
+            this.fixsound.play()
             this.player.anims.play('fix', true)
         }
 
